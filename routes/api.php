@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\Legacy\DeleteUserInvitationController;
+use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
 use Illuminate\Support\Facades\Route;
 
 /*
