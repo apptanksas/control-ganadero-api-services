@@ -23,6 +23,8 @@ Route::domain(config("app.url"))->prefix("v1")->group(function () {
     Route::prefix("statistics")->group(
         function () {
             Route::get("new-users", StatisticsController::class . "@getNewUsers");
+            Route::get("subscriptions", StatisticsController::class . "@getNewSubscriptions");
+            Route::get("users", StatisticsController::class . "@getUsers");
         }
     );
 
