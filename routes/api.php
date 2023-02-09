@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
+use App\Http\Controllers\StatisticsController;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,4 +19,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::domain(config("app.url"))->prefix("v1")->group(function () {
     Route::delete("user-invitation/{id}", DeleteUserInvitationController::class);
+
+    Route::prefix("statistics")->group(
+        function () {
+            Route::get("new-users", StatisticsController::class . "@getNewUsers");
+        }
+    );
+
+
 });
