@@ -103,7 +103,6 @@ class StatisticsController extends Controller
 
     function getUsers()
     {
-
         $this->setup();
 
         $output = "";
@@ -135,4 +134,39 @@ class StatisticsController extends Controller
         return $output;
     }
 
+
+    function getAnimals()
+    {
+
+        $this->setup();
+
+        $totalAnimals = 0;
+        $output = "";
+
+        $output .= "<style>table, th, td {border:1px solid black;}</style>";
+
+        $output .= "<h1>Registro de animales</h1>";
+
+        $output .= "<table width='500'>";
+        $output .= "<tr><th>Año</th><th>Mes</th><th>Nuevos animales</th><th>Cantidad de animales registrados</th></tr>";
+
+        while ($this->dateFrom->isBefore($this->getCurrentDateMonth())) {
+
+            $newAnimals = DB::table("animal")->where("fechaalta", ">=", $this->dateFrom->timestamp)->where("fechaalta", "<=", $this->dateTo->timestamp)->whereNull("fechabaja")->count();
+            $totalAnimals = DB::table("animal")->where("fechaalta", "<=", $this->dateTo->timestamp)->whereNull("fechabaja")->count();
+
+            $output .= "<tr><td style='text-align: center;'>" . $this->dateFrom->year . "</td><td style='text-align: center;'>" . $this->dateFrom->monthName . "</td><td style='text-align: center;'>" . $newAnimals . " </td><td style='text-align: center;'>" . $totalAnimals . " </td></tr>";
+
+            $totalAnimals += $newAnimals;
+
+            $this->dateFrom->addMonth();
+            $this->dateTo->addDays($this->dateFrom->daysInMonth);
+        }
+
+        $output .= "</table>";
+
+        $output .= "\n<br/> <h2>Total animales registrados = $totalAnimals</h2>";
+
+        return $output;
+    }
 }
