@@ -28,15 +28,10 @@ class UpdateAnimalController extends ApiController
             }
 
             Schema::disableForeignKeyConstraints();
-            $result = Animal::query()->where("id", $id)->update([$attr => $value]) == 1;
+            Animal::query()->where("id", $id)->update([$attr => $value]);
             Schema::enableForeignKeyConstraints();
 
-            if ($result) {
-                return $this->successResponse("OK");
-            } else {
-                return $this->internalErrorResponse("Animal couldn't to update, please try again.");
-            }
-
+            return $this->successResponse("OK");
         } catch (\Throwable $e) {
             log_debug($e);
             return $this->internalErrorResponse("Animal couldn't to update, please try again.");
