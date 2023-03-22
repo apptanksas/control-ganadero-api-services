@@ -14,4 +14,9 @@ class Farm extends BaseModel
 
     public $timestamps = false;
     protected $table = self::TABLE_NAME;
+
+    function getUserId()
+    {
+        return $this->{self::FK_USER_ID};
+    }
 }
