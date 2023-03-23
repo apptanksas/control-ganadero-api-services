@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.4.0
+### Added
+- Se agrega endpoint para validar la membresia de un usuario y el nivel de acceso a una finca.
+
 ## v0.3.0
 ### Added
 - Se agrega comando para enviar notificaciones push con OneSignal como recordatorio para el vencimiento de suscripciones.
