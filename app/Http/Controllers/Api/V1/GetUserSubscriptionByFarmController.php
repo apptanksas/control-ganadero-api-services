@@ -20,22 +20,25 @@ class GetUserSubscriptionByFarmController extends ApiController
 
     function __invoke($userId, $farmId)
     {
-        return Cache::remember("get_user_suscription_by_farm_$userId" . "_$farmId", 3600, function () use ($userId, $farmId) {
+        try {
+            return Cache::remember("get_user_suscription_by_farm_$userId" . "_$farmId", 3600, function () use ($userId, $farmId) {
 
+                $isOwnerFarm = Farm::query()->where(BaseModel::ATTR_ID, $farmId)->where(Farm::FK_USER_ID, $userId)->exists();
 
-            $isOwnerFarm = Farm::query()->where(BaseModel::ATTR_ID, $farmId)->where(Farm::FK_USER_ID, $userId)->exists();
+                $userIsMember = $this->validateUserMembership($userId);
 
-            $userIsMember = $this->validateUserMembership($userId);
+                $farmAccess = $this->validateFarmAccess($isOwnerFarm, $userId, $farmId);
 
-            $farmAccess = $this->validateFarmAccess($isOwnerFarm, $userId, $farmId);
-
-            return $this->successResponse([
-                "is_owner" => $isOwnerFarm,
-                "suscription_type" => ($userIsMember) ? "member" : "free",
-                "farm_access" => $farmAccess
-            ]);
-        });
-
+                return $this->successResponse([
+                    "is_owner" => $isOwnerFarm,
+                    "suscription_type" => ($userIsMember) ? "member" : "free",
+                    "farm_access" => $farmAccess
+                ]);
+            });
+        } catch (\Exception $e) {
+            report($e);
+            return $this->internalErrorResponse("Internal server error");
+        }
     }
 
 
