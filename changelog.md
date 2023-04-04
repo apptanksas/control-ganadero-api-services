@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.5.0
+### Added
+- Se agrega api de visualización de estadisticas y metricas.
+
 ## v0.4.0
 ### Added
 - Se agrega endpoint para validar la membresia de un usuario y el nivel de acceso a una finca.

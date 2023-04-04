@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class StatisticsController extends Controller
@@ -43,7 +44,12 @@ class StatisticsController extends Controller
 
         while ($this->dateFrom->isBefore($this->getCurrentDateMonth())) {
 
-            $count = DB::table("user")->where("fechaalta", ">=", $this->dateFrom->timestamp)->where("fechaalta", "<=", $this->dateTo->timestamp)->count();
+            $dateFrom = $this->dateFrom->format("Y-m-d H:i:s");
+            $dateTo = $this->dateTo->format("Y-m-d H:i:s");
+
+            $count = Cache::rememberForever("statistic_get_new_users_$dateFrom" . "_" . $dateTo, function () {
+                return DB::table("user")->where("fechaalta", ">=", $this->dateFrom->timestamp)->where("fechaalta", "<=", $this->dateTo->timestamp)->count();
+            });
 
             $output .= "<tr><td style='text-align: center;'>" . $this->dateFrom->year . "</td><td style='text-align: center;'>" . $this->dateFrom->monthName . "</td><td style='text-align: center;'>" . $count . " </td></tr>";
 
@@ -78,13 +84,18 @@ class StatisticsController extends Controller
 
         while ($this->dateFrom->isBefore($this->getCurrentDateMonth())) {
 
-            $count = DB::table("suscripcion_usuario")
-                ->where("fecha_inicio", ">=", $this->dateFrom->format("Y-m-d H:i:s"))
-                ->where("fecha_inicio", "<=", $this->dateTo->format("Y-m-d H:i:s"))
-                ->where(function (Builder $builder) {
-                    return $builder->where("status", "A")->orWhere("status", "M");
-                })
-                ->count();
+            $dateFrom = $this->dateFrom->format("Y-m-d H:i:s");
+            $dateTo = $this->dateTo->format("Y-m-d H:i:s");
+
+            $count = Cache::rememberForever("statistic_get_new_subscriptions_$dateFrom" . "_" . $dateTo, function () {
+                return DB::table("suscripcion_usuario")
+                    ->where("fecha_inicio", ">=", $this->dateFrom->format("Y-m-d H:i:s"))
+                    ->where("fecha_inicio", "<=", $this->dateTo->format("Y-m-d H:i:s"))
+                    ->where(function (Builder $builder) {
+                        return $builder->where("status", "A")->orWhere("status", "M");
+                    })
+                    ->count();
+            });
 
             $output .= "<tr><td style='text-align: center;'>" . $this->dateFrom->year . "</td><td style='text-align: center;'>" . $this->dateFrom->monthName . "</td><td style='text-align: center;'>" . $count . " </td></tr>";
 
@@ -116,9 +127,13 @@ class StatisticsController extends Controller
 
         while ($this->dateFrom->isBefore($this->getCurrentDateMonth())) {
 
-            $query = "select COUNT(*) as count from `suscripcion_usuario` where '" . $this->dateFrom->format("Y-m-d H:i:s") . "' between `fecha_inicio` and `fecha_fin` and '" . $this->dateTo->format("Y-m-d H:i:s") . "' between `fecha_inicio` and `fecha_fin`;";
+            $dateFrom = $this->dateFrom->format("Y-m-d H:i:s");
+            $dateTo = $this->dateTo->format("Y-m-d H:i:s");
 
-            $countSubscriptions = DB::select(DB::raw($query))[0]->count;
+            $countSubscriptions = Cache::rememberForever("statistic_get_users_$dateFrom" . "_" . $dateTo, function () {
+                $query = "select COUNT(*) as count from `suscripcion_usuario` where '" . $this->dateFrom->format("Y-m-d H:i:s") . "' between `fecha_inicio` and `fecha_fin` and '" . $this->dateTo->format("Y-m-d H:i:s") . "' between `fecha_inicio` and `fecha_fin`;";
+                return DB::select(DB::raw($query))[0]->count;
+            });
 
             $totalUsers = DB::table("user")->where("fechaalta", "<=", $this->dateTo->timestamp)->count();
 
@@ -152,9 +167,15 @@ class StatisticsController extends Controller
 
         while ($this->dateFrom->isBefore($this->getCurrentDateMonth())) {
 
-            $newAnimals = DB::table("animal")->where("fechaalta", ">=", $this->dateFrom->timestamp)->where("fechaalta", "<=", $this->dateTo->timestamp)->whereNull("fechabaja")->count();
-            $totalAnimals = DB::table("animal")->where("fechaalta", "<=", $this->dateTo->timestamp)->whereNull("fechabaja")->count();
+            $dateFrom = $this->dateFrom->format("Y-m-d H:i:s");
+            $dateTo = $this->dateTo->format("Y-m-d H:i:s");
 
+            $newAnimals = Cache::rememberForever("statistic_get_new_animals_$dateFrom" . "_" . $dateTo, function () {
+                return DB::table("animal")->where("fechaalta", ">=", $this->dateFrom->timestamp)->where("fechaalta", "<=", $this->dateTo->timestamp)->whereNull("fechabaja")->count();
+            });
+            $totalAnimals = Cache::rememberForever("statistic_get_total_animals_$dateFrom" . "_" . $dateTo, function () {
+                DB::table("animal")->where("fechaalta", "<=", $this->dateTo->timestamp)->whereNull("fechabaja")->count();
+            });
             $output .= "<tr><td style='text-align: center;'>" . $this->dateFrom->year . "</td><td style='text-align: center;'>" . $this->dateFrom->monthName . "</td><td style='text-align: center;'>" . $newAnimals . " </td><td style='text-align: center;'>" . $totalAnimals . " </td></tr>";
 
             $totalAnimals += $newAnimals;
