@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
+use App\Http\Controllers\Api\V1\GetUserSubscriptionByFarmController;
+use App\Http\Controllers\Api\V1\UpdateAnimalController;
 use App\Http\Controllers\StatisticsController;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::domain(config("app.url"))->prefix("v1")->group(function () {
     Route::delete("user-invitation/{id}", DeleteUserInvitationController::class);
+    Route::patch("animal/{id}/{attr}", UpdateAnimalController::class);
+    Route::get("user/{userId}/subscription/{farmId}", GetUserSubscriptionByFarmController::class);
 
     Route::prefix("statistics")->group(
         function () {
