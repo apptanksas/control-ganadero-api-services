@@ -15,10 +15,8 @@ return new class extends Migration {
     {
         Schema::create(AnimalLot::TABLE_NAME, function (Blueprint $table) {
             $table->id();
-            $table->string(AnimalLot::ATTR_NAME);
             $table->integer(AnimalLot::FK_ANIMAL_ID);
-            $table->integer(AnimalLot::FK_FARM_ID);
-            $table->timestamps();
+            $table->integer(AnimalLot::FK_LOT_ID);
         });
     }
 
