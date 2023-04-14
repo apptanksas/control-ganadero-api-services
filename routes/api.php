@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Api\V1\LotController;
+use App\Http\Controllers\Api\V1\AnimalLotController;
 use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
 use App\Http\Controllers\Api\V1\GetUserSubscriptionByFarmController;
+use App\Http\Controllers\Api\V1\LotController;
 use App\Http\Controllers\Api\V1\UpdateAnimalController;
 use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,7 @@ Route::domain(config("app.url"))->prefix("v1")->group(function () {
     Route::get("user/{userId}/subscription/{farmId}", GetUserSubscriptionByFarmController::class);
 
     Route::resource("lots", LotController::class)->only("index", "store", "update", "destroy");
+    Route::resource("lots/{id}/animals", AnimalLotController::class)->only("index", "store", "destroy");
 
     Route::prefix("statistics")->group(
         function () {

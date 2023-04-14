@@ -14,4 +14,16 @@ class AnimalLot extends BaseModel
     protected $table = self::TABLE_NAME;
 
     public $timestamps = false;
+
+    protected $fillable = [self::FK_LOT_ID, self::FK_ANIMAL_ID];
+
+    function getLotId()
+    {
+        return $this->{self::FK_LOT_ID};
+    }
+
+    function getAnimalId()
+    {
+        return $this->{self::FK_ANIMAL_ID};
+    }
 }

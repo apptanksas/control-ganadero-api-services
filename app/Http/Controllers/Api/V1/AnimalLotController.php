@@ -1,0 +1,124 @@
+<?php
+
+
+namespace App\Http\Controllers\Api\V1;
+
+
+use App\Http\Controllers\ApiController;
+use App\Models\AnimalLot;
+use App\Models\Lot;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Src\Util\TTL;
+
+class AnimalLotController extends ApiController
+{
+    private const CACHE_KEY_INDEX = "index_animal_lots_%s";
+
+    // GET -> v1/lots/{ID}/animals
+    function index($lotId, Request $request)
+    {
+        try {
+            return Cache::remember(sprintf(self::CACHE_KEY_INDEX, $lotId), TTL::ONE_MONTH,
+                function () use ($lotId) {
+                    $result = AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $lotId)->get();
+                    $output = [];
+
+                    foreach ($result as $item) {
+                        $output[] = [
+                            "id" => $item->getId(),
+                            "lot_id" => $item->getLotId(),
+                            "animal_id" => $item->getAnimalId()
+                        ];
+                    }
+
+                    return $output;
+                });
+
+        } catch (\Exception $e) {
+            report($e);
+            return $this->internalErrorResponse();
+        }
+
+    }
+
+    // POST -> v1/lots/{ID}/animals
+    function store($lotId, Request $request)
+    {
+
+        if (!$request->exists("animal_id")) {
+            return $this->badRequestResponse("Params missing!");
+        }
+
+        try {
+
+            $animalId = $request->get("animal_id");
+
+            return Cache::remember("store_animal_lots_$lotId" . "_$animalId", TTL::ONE_HOUR, function () use ($lotId, $animalId) {
+
+                if (AnimalLot::query()
+                    ->where(AnimalLot::FK_LOT_ID, $lotId)
+                    ->where(AnimalLot::FK_ANIMAL_ID, $animalId)
+                    ->exists()
+                ) {
+                    return $this->badRequestResponse("Animal Lot already exists", "lot_exists");
+                }
+
+                $animalLot = new AnimalLot([
+                        AnimalLot::FK_LOT_ID => $lotId,
+                        AnimalLot::FK_ANIMAL_ID => $animalId
+                    ]
+                );
+
+                $animalLot->saveOrFail();
+
+                $this->removeCacheIndex($lotId);
+
+                return $this->successResponse(
+                    [
+                        "id" => $animalLot->getId(),
+                        "lot_id" => $lotId,
+                        "animal_id" => $animalId
+                    ]
+                );
+            });
+
+        } catch (\Exception $e) {
+            report($e);
+            return $this->internalErrorResponse();
+        }
+    }
+
+    // DELETE -> v1/lots/{lotIt}/animals/{relationshipId}
+    function destroy($lotId, $id)
+    {
+        try {
+            /**
+             * @var  $animalLot AnimalLot
+             */
+            $animalLot = AnimalLot::query()->where(AnimalLot::ATTR_ID, $id)->where(AnimalLot::FK_LOT_ID, $lotId)->firstOrFail();
+            $animalLot->deleteOrFail();
+
+            $this->removeCacheIndex($animalLot->getLotId());
+            $this->removeCacheStore($lotId, $animalLot->getAnimalId());
+
+            return $this->successResponse();
+        } catch (ModelNotFoundException $exception) {
+            return $this->notFoundResponse();
+        } catch (\Throwable $exception) {
+            report($exception);
+            return $this->internalErrorResponse();
+        }
+    }
+
+    private function removeCacheIndex($farmId)
+    {
+        Cache::delete(sprintf(self::CACHE_KEY_INDEX, $farmId));
+    }
+
+    private function removeCacheStore($lotId, $animalId)
+    {
+        Cache::delete("store_animal_lots_$lotId" . "_$animalId");
+    }
+}

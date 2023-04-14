@@ -9,12 +9,11 @@ use App\Models\Lot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Src\Util\TTL;
 
 class LotController extends ApiController
 {
     private const CACHE_KEY_INDEX = "index_lots_%s";
-    private const TTL_ONE_MONTH = 60 * 60 * 24 * 30;
-    private const TTL_ONE_HOUR = 60 * 60;
 
     // GET -> v1/lots
     function index(Request $request)
@@ -27,7 +26,7 @@ class LotController extends ApiController
                 return $this->badRequestResponse("farm_id param missing!");
             }
 
-            return Cache::remember(sprintf(self::CACHE_KEY_INDEX, $farmId), self::TTL_ONE_MONTH,
+            return Cache::remember(sprintf(self::CACHE_KEY_INDEX, $farmId), TTL::ONE_MONTH,
                 function () use ($farmId) {
                     $result = Lot::query()->where(Lot::FK_FARM_ID, $farmId)->get();
                     $output = [];
@@ -62,7 +61,7 @@ class LotController extends ApiController
             $nameNormalized = $this->normalizeText($name);
             $farmId = $request->get("farm_id");
 
-            return Cache::remember("store_lots_$nameNormalized" . "_$farmId", self::TTL_ONE_HOUR, function () use ($name, $nameNormalized, $farmId) {
+            return Cache::remember("store_lots_$nameNormalized" . "_$farmId", TTL::ONE_HOUR, function () use ($name, $nameNormalized, $farmId) {
                 if (Lot::query()
                     ->where(Lot::ATTR_NAME_NORMALIZED, $nameNormalized)
                     ->where(Lot::FK_FARM_ID, $farmId)
@@ -110,7 +109,7 @@ class LotController extends ApiController
             $name = $request->get("name");
             $nameNormalized = $this->normalizeText($name);
 
-            return Cache::remember("update_lots_$nameNormalized" . "_$id", self::TTL_ONE_HOUR, function () use ($id, $name, $nameNormalized) {
+            return Cache::remember("update_lots_$nameNormalized" . "_$id", TTL::ONE_HOUR, function () use ($id, $name, $nameNormalized) {
 
                 /**
                  * @var  $lot Lot
@@ -150,8 +149,11 @@ class LotController extends ApiController
              */
             $lot = Lot::queryById($id);
             $lot->deleteOrFail();
+            $normalizedName = $this->normalizeText($lot->getName());
 
             $this->removeCacheIndex($lot->getFarmId());
+            $this->removeCacheStore($normalizedName, $lot->getFarmId());
+            $this->removeCacheUpdate($normalizedName, $lot->getId());
 
             return $this->successResponse();
 
@@ -186,5 +188,15 @@ class LotController extends ApiController
     private function removeCacheIndex($farmId)
     {
         Cache::delete(sprintf(self::CACHE_KEY_INDEX, $farmId));
+    }
+
+    private function removeCacheStore($nameNormalized, $farmId)
+    {
+        Cache::delete("store_lots_$nameNormalized" . "_$farmId");
+    }
+
+    private function removeCacheUpdate($nameNormalized, $id)
+    {
+        Cache::delete("update_lots_$nameNormalized" . "_$id");
     }
 }
