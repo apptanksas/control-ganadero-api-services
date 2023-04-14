@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 
 
 use App\Http\Controllers\ApiController;
+use App\Models\AnimalLot;
 use App\Models\Lot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -34,7 +35,8 @@ class LotController extends ApiController
                     foreach ($result as $item) {
                         $output[] = [
                             "id" => $item->getId(),
-                            "name" => $item->getName()
+                            "name" => $item->getName(),
+                            "animals" => AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())->count()
                         ];
                     }
 

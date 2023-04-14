@@ -58,7 +58,7 @@ class AnimalLotController extends ApiController
             return Cache::remember("store_animal_lots_$lotId" . "_$animalId", TTL::ONE_HOUR, function () use ($lotId, $animalId) {
 
                 if (AnimalLot::query()
-                    ->where(AnimalLot::FK_LOT_ID, $lotId)
+                    ->where(AnimalLot::FK_LOT_ID, intval($lotId))
                     ->where(AnimalLot::FK_ANIMAL_ID, $animalId)
                     ->exists()
                 ) {
@@ -78,7 +78,7 @@ class AnimalLotController extends ApiController
                 return $this->successResponse(
                     [
                         "id" => $animalLot->getId(),
-                        "lot_id" => $lotId,
+                        "lot_id" => intval($lotId),
                         "animal_id" => $animalId
                     ]
                 );
