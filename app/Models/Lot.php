@@ -15,4 +15,14 @@ class Lot extends BaseModel
     protected $fillable = [self::ATTR_NAME, self::ATTR_NAME_NORMALIZED, self::FK_FARM_ID];
 
     protected $table = self::TABLE_NAME;
+
+    function getName()
+    {
+        return $this->{self::ATTR_NAME};
+    }
+
+    function getFarmId(): int
+    {
+        return $this->{self::FK_FARM_ID};
+    }
 }
