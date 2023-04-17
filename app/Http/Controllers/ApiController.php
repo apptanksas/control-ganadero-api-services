@@ -35,6 +35,12 @@ class ApiController extends Controller
         return $this->getApiResponse($data, 400, $codeError);
     }
 
+    function notFoundResponse(array|string $data = [], string $codeError = "not_found"): JsonResponse
+    {
+        return $this->getApiResponse($data, 404, $codeError);
+    }
+
+
     function internalErrorResponse(array|string $data = [], string $codeError = "server_error"): JsonResponse
     {
         return $this->getApiResponse($data, 500);

@@ -1,5 +1,10 @@
 # Changelog Versions
 
+## v0.6.0
+### Added
+- Se agrega api CRUD para el manejo de lotes de animales.
+- Se agrega api CRUD para el relacionamiento de animales con los lotes.
+
 ## v0.5.0
 ### Added
 - Se agrega api de visualización de estadisticas y metricas.
