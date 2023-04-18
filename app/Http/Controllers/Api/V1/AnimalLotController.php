@@ -81,7 +81,6 @@ class AnimalLotController extends ApiController
                 $this->removeCacheIndex($lotId);
                 $this->removeCacheIndexLots($lot->getFarmId());
 
-
                 return $this->successResponse(
                     [
                         "id" => $animalLot->getId(),
@@ -128,7 +127,7 @@ class AnimalLotController extends ApiController
     {
         Cache::delete("store_animal_lots_$lotId" . "_$animalId");
     }
-
+    
     private function removeCacheIndexLots($farmId)
     {
         Cache::delete(sprintf("index_lots_%s", $farmId));
