@@ -33,7 +33,7 @@ class AnimalLotController extends ApiController
                         ];
                     }
 
-                    return $output;
+                    return $this->successResponse($output);
                 });
 
         } catch (\Exception $e) {
