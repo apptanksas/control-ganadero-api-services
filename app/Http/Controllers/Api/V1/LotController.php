@@ -39,8 +39,7 @@ class LotController extends ApiController
                             "animals" => AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())->count()
                         ];
                     }
-
-                    return $output;
+                    return $this->successResponse($output);
                 });
 
         } catch (\Exception $e) {

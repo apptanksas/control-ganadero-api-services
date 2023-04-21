@@ -32,8 +32,7 @@ class AnimalLotController extends ApiController
                             "animal_id" => $item->getAnimalId()
                         ];
                     }
-
-                    return $output;
+                    return $this->successResponse($output);
                 });
 
         } catch (\Exception $e) {
@@ -127,7 +126,7 @@ class AnimalLotController extends ApiController
     {
         Cache::delete("store_animal_lots_$lotId" . "_$animalId");
     }
-    
+
     private function removeCacheIndexLots($farmId)
     {
         Cache::delete(sprintf("index_lots_%s", $farmId));
