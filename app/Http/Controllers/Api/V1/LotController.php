@@ -163,7 +163,7 @@ class LotController extends ApiController
             $this->removeCacheStore($normalizedName, $lot->getFarmId());
             $this->removeCacheUpdate($normalizedName, $lot->getId());
 
-            return $this->successResponse();
+            return $this->successResponse("OK");
 
         } catch (ModelNotFoundException $exception) {
             return $this->notFoundResponse();
