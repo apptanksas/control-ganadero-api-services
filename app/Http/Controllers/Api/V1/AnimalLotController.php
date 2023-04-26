@@ -32,6 +32,7 @@ class AnimalLotController extends ApiController
                             "animal_id" => $item->getAnimalId()
                         ];
                     }
+
                     return $this->successResponse($output);
                 });
 
@@ -79,6 +80,7 @@ class AnimalLotController extends ApiController
 
                 $this->removeCacheIndex($lotId);
                 $this->removeCacheIndexLots($lot->getFarmId());
+
 
                 return $this->successResponse(
                     [
