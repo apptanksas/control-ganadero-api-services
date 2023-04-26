@@ -110,7 +110,8 @@ class AnimalLotController extends ApiController
             $this->removeCacheIndex($animalLot->getLotId());
             $this->removeCacheStore($lotId, $animalLot->getAnimalId());
 
-            return $this->successResponse();
+            return $this->successResponse("OK");
+
         } catch (ModelNotFoundException $exception) {
             return $this->notFoundResponse();
         } catch (\Throwable $exception) {
