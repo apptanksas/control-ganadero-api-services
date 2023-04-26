@@ -10,6 +10,7 @@ use App\Models\Lot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Src\Util\TTL;
 
 class LotController extends ApiController
@@ -150,7 +151,12 @@ class LotController extends ApiController
              * @var  $lot Lot
              */
             $lot = Lot::queryById($id);
-            $lot->deleteOrFail();
+
+            DB::transaction(function () use ($id, $lot) {
+                $lot->deleteOrFail();
+                AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $id)->delete();
+            });
+
             $normalizedName = $this->normalizeText($lot->getName());
 
             $this->removeCacheIndex($lot->getFarmId());
