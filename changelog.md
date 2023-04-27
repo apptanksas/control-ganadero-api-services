@@ -4,6 +4,7 @@
 ### Added
 - Se agrega api CRUD para el manejo de lotes de animales.
 - Se agrega api CRUD para el relacionamiento de animales con los lotes.
+- Se agrega api para obtener el lot dado un animal id.
 
 ## v0.5.0
 ### Added
