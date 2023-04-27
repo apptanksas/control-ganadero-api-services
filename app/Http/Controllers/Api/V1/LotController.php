@@ -125,6 +125,7 @@ class LotController extends ApiController
                 ]);
 
                 $this->removeCacheIndex($lot->getFarmId());
+                $this->removeCacheBatchLotByAnimal($lot->getId());
 
                 return $this->successResponse(
                     [
@@ -162,6 +163,7 @@ class LotController extends ApiController
             $this->removeCacheIndex($lot->getFarmId());
             $this->removeCacheStore($normalizedName, $lot->getFarmId());
             $this->removeCacheUpdate($normalizedName, $lot->getId());
+            $this->removeCacheBatchLotByAnimal($lot->getId());
 
             return $this->successResponse("OK");
 
@@ -206,5 +208,15 @@ class LotController extends ApiController
     private function removeCacheUpdate($nameNormalized, $id)
     {
         Cache::delete("update_lots_$nameNormalized" . "_$id");
+    }
+
+    private function removeCacheBatchLotByAnimal($lotId)
+    {
+        $cacheKeys = Cache::get(sprintf(GetLotByAnimalIdController::CACHE_KEY_BATCH_FORMAT, $lotId), []);
+
+        foreach ($cacheKeys as $cacheKey) {
+            Cache::delete($cacheKey);
+        }
+        Cache::delete(sprintf(GetLotByAnimalIdController::CACHE_KEY_BATCH_FORMAT, $lotId));
     }
 }
