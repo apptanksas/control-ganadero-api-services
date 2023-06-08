@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.7.0
+### Added
+- Se agrega informacion adicional en la estadistica de suscripciones para mostrar renovaciones, vencimientos y % de renovacion.
+
 ## v0.6.0
 ### Added
 - Se agrega api CRUD para el manejo de lotes de animales.
