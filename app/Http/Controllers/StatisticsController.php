@@ -13,8 +13,10 @@ class StatisticsController extends Controller
 {
     private const START_YEAR = 2018;
     private const START_MONTH = 1;
+    private const CACHE_KEY_USERS_ID_SUBSCRIPTION = "users_id_subscription_%s_%s";
     private Carbon $dateFrom;
     private Carbon $dateTo;
+
 
     private function setup()
     {
@@ -69,41 +71,82 @@ class StatisticsController extends Controller
 
     function getNewSubscriptions()
     {
-        $this->setup();
 
+        $a = [1, 2, 3, 4, 5, 6];
+        $b = [2, 3];
+        //print_r(array_diff($a, $b));
+        //print_r(array_unique(array_merge($a,$b)));
+        //return;
+        $this->setup();
 
         $totalUsers = 0;
         $output = "";
 
         $output .= "<style>table, th, td {border:1px solid black;}</style>";
 
-        $output .= "<h1>Nuevas suscripciones</h1>";
+        $output .= "<h1>Suscripciones</h1>";
 
-        $output .= "<table width='500'>";
-        $output .= "<tr><th>Año</th><th>Mes</th><th>Suscripciones</th></tr>";
+        $output .= "<table width='800'>";
+        $output .= "<tr><th>Año</th><th>Mes</th><th>Suscripciones</th><th>Nuevas Suscripciones</th><th>Renovaciones</th><th>Vencimientos</th><th width='200px'>% Renovación por vencimientos</th></tr>";
+
+        $usersIdInCache = [];
 
         while ($this->dateFrom->isBefore($this->getCurrentDateMonth())) {
 
             $dateFrom = $this->dateFrom->format("Y-m-d H:i:s");
             $dateTo = $this->dateTo->format("Y-m-d H:i:s");
 
-            $count = Cache::rememberForever("statistic_get_new_subscriptions_$dateFrom" . "_" . $dateTo, function () {
-                return DB::table("suscripcion_usuario")
+
+            $usersId = Cache::rememberForever("statistic_get_new_subscriptions_$dateFrom" . "_" . $dateTo, function () {
+                return array_map(function ($item) {
+                    return $item->user_id;
+                }, DB::table("suscripcion_usuario")
                     ->where("fecha_inicio", ">=", $this->dateFrom->format("Y-m-d H:i:s"))
                     ->where("fecha_inicio", "<=", $this->dateTo->format("Y-m-d H:i:s"))
                     ->where(function (Builder $builder) {
                         return $builder->where("status", "A")->orWhere("status", "M");
                     })
-                    ->count();
+                    ->get("user_id")->all());
             });
 
-            $output .= "<tr><td style='text-align: center;'>" . $this->dateFrom->year . "</td><td style='text-align: center;'>" . $this->dateFrom->monthName . "</td><td style='text-align: center;'>" . $count . " </td></tr>";
+            $usersIdExpiration = Cache::rememberForever("statistic_get_new_expirations_$dateFrom" . "_" . $dateTo, function () {
+                return array_map(function ($item) {
+                    return $item->user_id;
+                }, DB::table("suscripcion_usuario")
+                    ->where("fecha_fin", ">=", $this->dateFrom->format("Y-m-d H:i:s"))
+                    ->where("fecha_fin", "<=", $this->dateTo->format("Y-m-d H:i:s"))
+                    ->where(function (Builder $builder) {
+                        return $builder->where("status", "A")->orWhere("status", "M");
+                    })
+                    ->get("user_id")->all());
+            });
 
-            $totalUsers += $count;
+            $countSubscriptions = count($usersId);
+            $countExpirations = count($usersIdExpiration);
+            $percentageRenovationByExpiration = ($countExpirations == 0) ? 0 : round((count(array_intersect($usersId, $usersIdExpiration)) / $countExpirations) * 100, 2);
+
+            $countNewSubscriptions = count(array_diff($usersId, $usersIdInCache));
+            $countRenovations = $countSubscriptions - $countNewSubscriptions;
+
+
+            $usersIdInCache = array_unique(array_merge($usersIdInCache, $usersId));
+
+            $output .= "<tr><td style='text-align: center;'>" . $this->dateFrom->year . "</td>";
+            $output .= "<td style='text-align: center;'>" . $this->dateFrom->monthName . "</td>";
+            $output .= "<td style='text-align: center;'>" . $countSubscriptions . " </td>";
+            $output .= "<td style='text-align: center;'>" . $countNewSubscriptions . " </td>";
+            $output .= "<td style='text-align: center;'>" . $countRenovations . " </td>";
+            $output .= "<td style='text-align: center;'>" . $countExpirations . " </td>";
+            $output .= "<td style='text-align: center;' width='100px'>" . $percentageRenovationByExpiration . "%</td>";
+            $output .= "</tr>";
+
+            $totalUsers += $countSubscriptions;
 
             $this->dateFrom->addMonth();
             $this->dateTo->addDays($this->dateFrom->daysInMonth);
         }
+
+        $output .= "<tr><th>Año</th><th>Mes</th><th>Suscripciones</th><th>Nuevas Suscripciones</th><th>Renovaciones</th><th>Vencimientos</th><th width='200px'>% Renovación por vencimientos</th></tr>";
 
         $output .= "</table>";
 
