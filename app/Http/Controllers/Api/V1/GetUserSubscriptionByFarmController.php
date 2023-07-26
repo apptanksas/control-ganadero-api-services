@@ -75,7 +75,7 @@ class GetUserSubscriptionByFarmController extends ApiController
         }
 
         if ($isOwnerFarm && !$userIsMember) {
-            return FarmAccess::FULL;
+            return FarmAccess::LIMIT;
         }
 
         return FarmAccess::NONE;
