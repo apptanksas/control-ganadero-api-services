@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.7.1
+### Fixed
+- Se corrige validación de acceso en la API de subscription para usuarios owner de una finca.
+
 ## v0.7.0
 ### Added
 - Se agrega informacion adicional en la estadistica de suscripciones para mostrar renovaciones, vencimientos y % de renovacion.

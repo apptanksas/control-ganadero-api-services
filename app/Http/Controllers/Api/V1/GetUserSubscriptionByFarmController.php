@@ -27,7 +27,7 @@ class GetUserSubscriptionByFarmController extends ApiController
 
                 $userIsMember = $this->validateUserMembership($userId);
 
-                $farmAccess = $this->validateFarmAccess($isOwnerFarm, $userId, $farmId);
+                $farmAccess = $this->validateFarmAccess($isOwnerFarm, $userId, $farmId, $userIsMember);
 
                 return $this->successResponse([
                     "is_owner" => $isOwnerFarm,
@@ -42,7 +42,7 @@ class GetUserSubscriptionByFarmController extends ApiController
     }
 
 
-    private function validateFarmAccess(bool $isOwnerFarm, $userId, $farmId)
+    private function validateFarmAccess(bool $isOwnerFarm, $userId, $farmId, $userIsMember)
     {
         $user = User::queryById($userId);
 
@@ -57,7 +57,7 @@ class GetUserSubscriptionByFarmController extends ApiController
         $existsInvitation = !is_null($invitation);
         $userOwnerFarmIsMember = false;
 
-        if ($isOwnerFarm) {
+        if ($isOwnerFarm && $userIsMember) {
             return FarmAccess::FULL;
         }
 
@@ -72,6 +72,10 @@ class GetUserSubscriptionByFarmController extends ApiController
 
         if ($existsInvitation && !$userOwnerFarmIsMember) {
             return FarmAccess::LIMIT;
+        }
+
+        if ($isOwnerFarm && !$userIsMember) {
+            return FarmAccess::FULL;
         }
 
         return FarmAccess::NONE;
