@@ -1,6 +1,6 @@
 # Changelog Versions
 
-## v0.7.0
+## v0.7.1
 ### Added
 - Se agrega informacion adicional en la estadistica de suscripciones para mostrar renovaciones, vencimientos y % de renovacion.
 
