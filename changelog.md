@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.7.2
+### Fixed
+- Se actualiza el tiempo de cache para obtener la información de un suscripcion a 5 minutos.
+
 ## v0.7.1
 ### Fixed
 - Se corrige validación de acceso en la API de subscription para usuarios owner de una finca.
