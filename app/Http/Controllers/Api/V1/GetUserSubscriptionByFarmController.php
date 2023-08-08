@@ -18,10 +18,12 @@ use Src\Enum\FarmAccess;
 class GetUserSubscriptionByFarmController extends ApiController
 {
 
+    const CACHE_TTL = 60 * 5; // 5 minutes
+
     function __invoke($userId, $farmId)
     {
         try {
-            return Cache::remember("get_user_suscription_by_farm_$userId" . "_$farmId", 3600, function () use ($userId, $farmId) {
+            return Cache::remember("get_user_suscription_by_farm_$userId" . "_$farmId", self::CACHE_TTL, function () use ($userId, $farmId) {
 
                 $isOwnerFarm = Farm::query()->where(BaseModel::ATTR_ID, $farmId)->where(Farm::FK_USER_ID, $userId)->exists();
 
