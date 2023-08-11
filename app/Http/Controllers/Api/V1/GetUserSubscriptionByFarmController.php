@@ -93,6 +93,6 @@ class GetUserSubscriptionByFarmController extends ApiController
             ->where(UserSubscription::ATTR_DATE_END, ">=", $currentDate->format("Y-m-d 00:00:00"))
             ->where(function (Builder $builder) {
                 return $builder->where("status", "A")->orWhere("status", "M");
-            })->toSql();
+            })->exists();
     }
 }
