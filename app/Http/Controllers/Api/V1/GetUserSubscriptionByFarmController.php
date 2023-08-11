@@ -89,10 +89,10 @@ class GetUserSubscriptionByFarmController extends ApiController
         $currentDate = Carbon::now();
         return UserSubscription::query()
             ->where(UserSubscription::FK_USER_ID, $userId)
-            ->where(UserSubscription::ATTR_DATE_START, ">=", $currentDate->format("Y-m-d 00:00:00"))
-            ->where(UserSubscription::ATTR_DATE_END, "<=", $currentDate->format("Y-m-d 23:59:59"))
+            ->where(UserSubscription::ATTR_DATE_START, "<=", $currentDate->format("Y-m-d 23:59:59"))
+            ->where(UserSubscription::ATTR_DATE_END, ">=", $currentDate->format("Y-m-d 00:00:00"))
             ->where(function (Builder $builder) {
                 return $builder->where("status", "A")->orWhere("status", "M");
-            })->exists();
+            })->toSql();
     }
 }
