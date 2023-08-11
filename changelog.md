@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.7.3
+### Fixed
+- Se corrige validacion de tipo de subscripcion.
+
 ## v0.7.2
 ### Fixed
 - Se actualiza el tiempo de cache para obtener la información de un suscripcion a 5 minutos.

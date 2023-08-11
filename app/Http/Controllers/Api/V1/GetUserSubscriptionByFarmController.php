@@ -22,6 +22,7 @@ class GetUserSubscriptionByFarmController extends ApiController
 
     function __invoke($userId, $farmId)
     {
+
         try {
             return Cache::remember("get_user_suscription_by_farm_$userId" . "_$farmId", self::CACHE_TTL, function () use ($userId, $farmId) {
 
@@ -88,8 +89,8 @@ class GetUserSubscriptionByFarmController extends ApiController
         $currentDate = Carbon::now();
         return UserSubscription::query()
             ->where(UserSubscription::FK_USER_ID, $userId)
-            ->where(UserSubscription::ATTR_DATE_START, "<=", $currentDate->format("Y-m-d H:i:s"))
-            ->where(UserSubscription::ATTR_DATE_END, ">=", $currentDate->format("Y-m-d H:i:s"))
+            ->where(UserSubscription::ATTR_DATE_START, ">=", $currentDate->format("Y-m-d 00:00:00"))
+            ->where(UserSubscription::ATTR_DATE_END, "<=", $currentDate->format("Y-m-d 23:59:59"))
             ->where(function (Builder $builder) {
                 return $builder->where("status", "A")->orWhere("status", "M");
             })->exists();
