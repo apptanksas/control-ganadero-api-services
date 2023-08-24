@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\LoadAnimalLotsCommand;
 use App\Console\Commands\SendSubscriptionReminders;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -10,7 +11,8 @@ class Kernel extends ConsoleKernel
 {
 
     protected $commands = [
-        SendSubscriptionReminders::class
+        SendSubscriptionReminders::class,
+        LoadAnimalLotsCommand::class
     ];
 
     /**

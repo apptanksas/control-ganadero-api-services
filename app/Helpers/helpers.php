@@ -303,3 +303,25 @@ if (!function_exists("abortJSONResponse")) {
     }
 
 }
+
+if (!function_exists("normalize_text")) {
+    function normalize_text($text): string
+    {
+        return trim(
+            str_replace(" ", "",
+                strtolower(strtr($text, array(
+                    'á' => 'a',
+                    'é' => 'e',
+                    'í' => 'i',
+                    'ó' => 'o',
+                    'ú' => 'u',
+                    'Á' => 'A',
+                    'É' => 'E',
+                    'Í' => 'I',
+                    'Ó' => 'O',
+                    'Ú' => 'U',
+                    "ñ" => "n",
+                    "Ñ" => "N"
+                )))));
+    }
+}
