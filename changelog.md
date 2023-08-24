@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## v0.8.0
+### Added
+- Se agrega comando para cargar a los lotes a la nueva estructura de datos.
+
 ## v0.7.3
 ### Fixed
 - Se corrige validacion de tipo de subscripcion.

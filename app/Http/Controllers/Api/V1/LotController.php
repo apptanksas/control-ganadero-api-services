@@ -158,7 +158,7 @@ class LotController extends ApiController
                 AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $id)->delete();
             });
 
-            $normalizedName = $this->normalizeText($lot->getName());
+            $normalizedName = normalize_text($lot->getName());
 
             $this->removeCacheIndex($lot->getFarmId());
             $this->removeCacheStore($normalizedName, $lot->getFarmId());
@@ -173,26 +173,6 @@ class LotController extends ApiController
             report($exception);
             return $this->internalErrorResponse();
         }
-    }
-
-    private function normalizeText($text)
-    {
-        return trim(
-            str_replace(" ", "",
-                strtolower(strtr($text, array(
-                    'á' => 'a',
-                    'é' => 'e',
-                    'í' => 'i',
-                    'ó' => 'o',
-                    'ú' => 'u',
-                    'Á' => 'A',
-                    'É' => 'E',
-                    'Í' => 'I',
-                    'Ó' => 'O',
-                    'Ú' => 'U',
-                    "ñ" => "n",
-                    "Ñ" => "N"
-                )))));
     }
 
     private function removeCacheIndex($farmId)
