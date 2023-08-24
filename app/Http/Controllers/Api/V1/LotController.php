@@ -61,7 +61,7 @@ class LotController extends ApiController
         try {
 
             $name = $request->get("name");
-            $nameNormalized = $this->normalizeText($name);
+            $nameNormalized = normalize_text($name);
             $farmId = $request->get("farm_id");
 
             return Cache::remember("store_lots_$nameNormalized" . "_$farmId", TTL::ONE_HOUR, function () use ($name, $nameNormalized, $farmId) {
@@ -110,7 +110,7 @@ class LotController extends ApiController
         try {
 
             $name = $request->get("name");
-            $nameNormalized = $this->normalizeText($name);
+            $nameNormalized = normalize_text($name);
 
             return Cache::remember("update_lots_$nameNormalized" . "_$id", TTL::ONE_HOUR, function () use ($id, $name, $nameNormalized) {
 
@@ -126,6 +126,13 @@ class LotController extends ApiController
 
                 $this->removeCacheIndex($lot->getFarmId());
                 $this->removeCacheBatchLotByAnimal($lot->getId());
+                /**
+                 * @var $result AnimalLot[]
+                 */
+                $result = AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $id)->get();
+                foreach ($result as $item) {
+                    $this->removeCacheLotByAnimaId($item->getAnimalId());
+                }
 
                 return $this->successResponse(
                     [
@@ -155,6 +162,13 @@ class LotController extends ApiController
 
             DB::transaction(function () use ($id, $lot) {
                 $lot->deleteOrFail();
+                /**
+                 * @var $result AnimalLot[]
+                 */
+                $result = AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $id)->get();
+                foreach ($result as $item) {
+                    $this->removeCacheLotByAnimaId($item->getAnimalId());
+                }
                 AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $id)->delete();
             });
 
@@ -198,5 +212,10 @@ class LotController extends ApiController
             Cache::delete($cacheKey);
         }
         Cache::delete(sprintf(GetLotByAnimalIdController::CACHE_KEY_BATCH_FORMAT, $lotId));
+    }
+
+    private function removeCacheLotByAnimaId($animalId)
+    {
+        Cache::delete(sprintf(GetLotByAnimalIdController::CACHE_KEY_FORMAT, $animalId));
     }
 }
