@@ -3,6 +3,7 @@
 ## v0.8.0
 ### Added
 - Se agrega comando para cargar a los lotes a la nueva estructura de datos.
+- Se corrige borrado de cache en la api de obtener lote por animal id.
 
 ## v0.7.3
 ### Fixed
