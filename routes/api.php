@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
 use App\Http\Controllers\Api\V1\GetLotByAnimalIdController;
 use App\Http\Controllers\Api\V1\GetUserSubscriptionByFarmController;
 use App\Http\Controllers\Api\V1\LotController;
+use App\Http\Controllers\Api\V1\ReportLegacyController;
 use App\Http\Controllers\Api\V1\UpdateAnimalController;
 use App\Http\Controllers\StatisticsController;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,11 @@ Route::domain(config("app.url"))->prefix("v1")->group(function () {
             Route::get("animals", StatisticsController::class . "@getAnimals");
         }
     );
+
+    Route::prefix("legacy/reports")->group(
+        function () {
+            Route::get("animals-by-lot", ReportLegacyController::class."@getReportAnimalsByLot");
+        });
 
 
 });
