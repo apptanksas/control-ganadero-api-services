@@ -1,5 +1,11 @@
 # Changelog Versions
 
+## v0.9.0
+### Added
+- Se agrega consumo de reportes legacy para animales por lote. 
+- Se agrega consumo de reportes legacy para hembras por lote.
+
+
 ## v0.8.0
 ### Added
 - Se agrega comando para cargar a los lotes a la nueva estructura de datos.
