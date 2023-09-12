@@ -44,6 +44,7 @@ Route::domain(config("app.url"))->prefix("v1")->group(function () {
     Route::prefix("legacy/reports")->group(
         function () {
             Route::get("animals-by-lot", ReportLegacyController::class."@getReportAnimalsByLot");
+            Route::get("females-by-lot", ReportLegacyController::class."@getReportFemalesByLot");
         });
 
 
