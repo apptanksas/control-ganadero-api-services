@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\ApiController;
 use App\Models\AnimalLot;
+use App\Models\Legacy\Animal;
 use App\Models\Lot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -32,12 +33,22 @@ class LotController extends ApiController
                 function () use ($farmId) {
                     $result = Lot::query()->where(Lot::FK_FARM_ID, $farmId)->get();
                     $output = [];
+                    $animalsNotDeletedIds = [];
+
+                    $animalsNotDeleted = Animal::query()->where(Animal::FK_FINCA_ID, $farmId)->whereNull(Animal::ATTR_FECHA_BAJA)->select(Animal::ATTR_ID)->get();
+
+                    foreach ($animalsNotDeleted as $index => $item) {
+                        $animalsNotDeletedIds[] = $item->id;
+                    }
 
                     foreach ($result as $item) {
+
+                        AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())->select(Animal::ATTR_ID);
+
                         $output[] = [
                             "id" => $item->getId(),
                             "name" => $item->getName(),
-                            "animals" => AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())->count()
+                            "animals" => AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())->whereIn(AnimalLot::FK_ANIMAL_ID, $animalsNotDeletedIds)->count()
                         ];
                     }
 

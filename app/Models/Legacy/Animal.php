@@ -18,6 +18,7 @@ class Animal extends BaseModel
     const ATTR_IN_FINCA = "in_finca";
     const ATTR_ESTADO_SALUD_ID = "estado_salud_id";
     const ATTR_ESTADO_VENTA_ID = "estado_venta_animal_id";
+    const ATTR_FECHA_BAJA = "fechabaja";
 
 
     const FK_FINCA_ID = "finca_id";
