@@ -29,7 +29,7 @@ class ReportLegacyController extends ApiController
         }
 
         try {
-            $output = Cache::remember("report_animals_by_lot_$farmId" . "$lotName", 60 * 5, function () use ($farmId, $lotName) {
+            $output = Cache::remember("report_animals_by_lot_$farmId" . "_" . $locale . "$lotName", 60 * 5, function () use ($farmId, $lotName) {
                 return $this->executeReportAnimalsByLot($farmId, $lotName);
             });
 
