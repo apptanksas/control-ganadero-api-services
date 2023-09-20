@@ -63,7 +63,7 @@ class Animal extends BaseModel
 
     function isMacho()
     {
-        return $this->{self::ATTR_IS_MACHO} == 0;
+        return strval($this->{self::ATTR_IS_MACHO}) == 1;
     }
 
     function isHembra()

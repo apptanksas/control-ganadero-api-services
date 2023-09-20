@@ -29,7 +29,7 @@ class ReportLegacyController extends ApiController
         }
 
         try {
-            $output = Cache::remember("report_animals_by_lot_$farmId" . "$lotName", 60 * 5, function () use ($farmId, $lotName) {
+            $output = Cache::remember("report_animals_by_lot_$farmId" . "_" . $locale . "_$lotName", 60 * 5, function () use ($farmId, $lotName) {
                 return $this->executeReportAnimalsByLot($farmId, $lotName);
             });
 
@@ -55,7 +55,7 @@ class ReportLegacyController extends ApiController
         }
 
         try {
-            $output = Cache::remember("report_female_by_lots_$farmId" . "$lotName", 60 * 5, function () use ($farmId, $lotName) {
+            $output = Cache::remember("report_female_by_lots_$farmId" . "_" . $locale . "_$lotName", 60 * 5, function () use ($farmId, $lotName) {
                 return $this->executeReportFemaleByLot($farmId, $lotName);
             });
 
