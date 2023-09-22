@@ -4,6 +4,7 @@
 ### Added
 - Se agrega consumo de reportes legacy para animales por lote. 
 - Se agrega consumo de reportes legacy para hembras por lote.
+- Se omiten los animales eliminados en la carga de lotes.
 
 
 ## v0.8.0
