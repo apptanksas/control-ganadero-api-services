@@ -38,6 +38,7 @@ class LoadAnimalLotsCommand extends Command
             ->where(Animal::ATTR_LOTE, "!=", "")
             ->where(Animal::ATTR_LOTE, "!=", "NULL")
             ->where(Animal::ATTR_LOTE, "!=", "null")
+            ->whereNull(Animal::ATTR_FECHA_BAJA)
             ->whereNotNull(Animal::FK_FINCA_ID)->count();
         $counter = 0;
         $counterSuccess = 0;
@@ -56,7 +57,9 @@ class LoadAnimalLotsCommand extends Command
             $animals = Animal::query()->whereNotNull([Animal::ATTR_LOTE, Animal::FK_FINCA_ID])
                 ->where(Animal::ATTR_LOTE, "!=", "")
                 ->where(Animal::ATTR_LOTE, "!=", "NULL")
-                ->where(Animal::ATTR_LOTE, "!=", "null")->paginate($perPage, [Animal::ATTR_ID, Animal::ATTR_LOTE, Animal::FK_FINCA_ID], "page", $currentPage)->items();
+                ->where(Animal::ATTR_LOTE, "!=", "null")
+                ->whereNull(Animal::ATTR_FECHA_BAJA)
+                ->paginate($perPage, [Animal::ATTR_ID, Animal::ATTR_LOTE, Animal::FK_FINCA_ID], "page", $currentPage)->items();
 
             foreach ($animals as $animal) {
 
