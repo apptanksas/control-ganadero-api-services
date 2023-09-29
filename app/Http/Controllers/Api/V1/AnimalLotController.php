@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\ApiController;
 use App\Models\AnimalLot;
+use App\Models\Legacy\Animal;
 use App\Models\Lot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -22,15 +23,39 @@ class AnimalLotController extends ApiController
         try {
             return Cache::remember(sprintf(self::CACHE_KEY_INDEX, $lotId), TTL::ONE_MONTH,
                 function () use ($lotId) {
+
+                    /**
+                     * @var $lot Lot
+                     */
+                    $lot = Lot::query()->where(Lot::ATTR_ID, $lotId)->first();
+
                     $result = AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $lotId)->get();
+                    $animalsActivesIds = [];
+
+                    if ($lot != null) {
+                        $animalsActives = Animal::query()->where(Animal::FK_FINCA_ID, $lot->getFarmId())
+                            ->whereNull(Animal::ATTR_FECHA_BAJA)->select(Animal::ATTR_ID)
+                            ->where(function ($builder) {
+                                return $builder->where(Animal::ATTR_ESTADO_VENTA_ID, "!=", Animal::ESTADO_VENTA_ANIMAL_VENDIDO)
+                                    ->orWhereNull(Animal::ATTR_ESTADO_VENTA_ID);
+                            })->get();
+
+                        foreach ($animalsActives as $index => $item) {
+                            $animalsActivesIds[] = $item->id;
+                        }
+                    }
+
                     $output = [];
 
                     foreach ($result as $item) {
-                        $output[] = [
-                            "id" => $item->getId(),
-                            "lot_id" => $item->getLotId(),
-                            "animal_id" => $item->getAnimalId()
-                        ];
+                        // Valida if animal is active (Not deleted and not sold
+                        if (in_array($item->getAnimalId(), $animalsActivesIds)) {
+                            $output[] = [
+                                "id" => $item->getId(),
+                                "lot_id" => $item->getLotId(),
+                                "animal_id" => $item->getAnimalId()
+                            ];
+                        }
                     }
 
                     return $this->successResponse($output);
