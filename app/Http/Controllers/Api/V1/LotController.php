@@ -33,12 +33,17 @@ class LotController extends ApiController
                 function () use ($farmId) {
                     $result = Lot::query()->where(Lot::FK_FARM_ID, $farmId)->get();
                     $output = [];
-                    $animalsNotDeletedIds = [];
+                    $animalsActivesIds = [];
 
-                    $animalsNotDeleted = Animal::query()->where(Animal::FK_FINCA_ID, $farmId)->whereNull(Animal::ATTR_FECHA_BAJA)->select(Animal::ATTR_ID)->get();
+                    $animalsActives = Animal::query()->where(Animal::FK_FINCA_ID, $farmId)
+                        ->whereNull(Animal::ATTR_FECHA_BAJA)->select(Animal::ATTR_ID)
+                        ->where(function ($builder) {
+                            return $builder->where(Animal::ATTR_ESTADO_VENTA_ID, "!=", Animal::ESTADO_VENTA_ANIMAL_VENDIDO)
+                                ->orWhereNull(Animal::ATTR_ESTADO_VENTA_ID);
+                        })->get();
 
-                    foreach ($animalsNotDeleted as $index => $item) {
-                        $animalsNotDeletedIds[] = $item->id;
+                    foreach ($animalsActives as $index => $item) {
+                        $animalsActivesIds[] = $item->id;
                     }
 
                     foreach ($result as $item) {
@@ -48,7 +53,9 @@ class LotController extends ApiController
                         $output[] = [
                             "id" => $item->getId(),
                             "name" => $item->getName(),
-                            "animals" => AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())->whereIn(AnimalLot::FK_ANIMAL_ID, $animalsNotDeletedIds)->count()
+                            "animals" => AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $item->getId())
+                                ->whereIn(AnimalLot::FK_ANIMAL_ID, $animalsActivesIds)
+                                ->count()
                         ];
                     }
 
