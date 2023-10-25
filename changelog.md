@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## 2023-10-25
+### Added
+- Se agrega comando para actualizar las fotos de los animales al nuevo dominio.
+
 ## v0.9.1
 ### Fixed
 - Se omiten los animales vendidos en el conteo de animales en los lotes.
