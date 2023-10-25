@@ -49,7 +49,7 @@ class UpdatePhotoDomainCommand extends Command
             ]);
 
             Animal::query()->whereNotNull(Animal::ATTR_FOTO)->update([
-                Animal::ATTR_FOTO => DB::raw("REPLACE(" . Animal::ATTR_FOTO . ", 'http','https')")
+                Animal::ATTR_FOTO => DB::raw("REPLACE(" . Animal::ATTR_FOTO . ", 'http://','https://')")
             ]);
 
         }catch (\Exception $e){
