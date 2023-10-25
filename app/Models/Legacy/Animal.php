@@ -15,6 +15,7 @@ class Animal extends BaseModel
     const ATTR_NOMBRE = "nombre";
     const ATTR_FECHA_NACIMIENTO = "fecha_nacimiento";
     const ATTR_IS_MACHO = "macho";
+    const ATTR_FOTO = "foto";
     const ATTR_IN_FINCA = "in_finca";
     const ATTR_ESTADO_SALUD_ID = "estado_salud_id";
     const ATTR_ESTADO_VENTA_ID = "estado_venta_animal_id";
