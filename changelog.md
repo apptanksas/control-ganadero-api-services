@@ -1,5 +1,9 @@
 # Changelog Versions
 
+## 2023-10-27
+### Added
+- Se agrega aumento de rate-limit para las apis.
+
 ## 2023-10-25
 ### Added
 - Se agrega comando para actualizar las fotos de los animales al nuevo dominio.
