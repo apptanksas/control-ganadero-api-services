@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Src\Util\EloquentBuilderWrapper;
 use Src\Util\TTL;
 
 class LotController extends ApiController
@@ -35,17 +36,9 @@ class LotController extends ApiController
                     $output = [];
                     $animalsActivesIds = [];
 
-                    $animalsActives = Animal::query()->where(Animal::FK_FINCA_ID, $farmId)
-                        ->whereNull(Animal::ATTR_FECHA_BAJA)
-                        ->where(function ($builder) {
-                            return $builder->whereNull(Animal::ATTR_IN_FINCA)->orWhere(Animal::ATTR_IN_FINCA, 1);
-                        })
-                        ->where(function ($builder) {
-                            return $builder->whereNull(Animal::ATTR_ESTADO_SALUD_ID)->orWhere(Animal::ATTR_ESTADO_SALUD_ID, "!=", Animal::ESTADO_SALUD_FALLECIDA);
-                        })
-                        ->where(function ($builder) {
-                            return $builder->where(Animal::ATTR_ESTADO_VENTA_ID, "!=", Animal::ESTADO_VENTA_ANIMAL_VENDIDO)->orWhereNull(Animal::ATTR_ESTADO_VENTA_ID);
-                        })->whereNull(Animal::ATTR_FECHA_BAJA)->select(Animal::ATTR_ID)->get();
+                    $animalsActives =
+                        EloquentBuilderWrapper::buildAnimalsActives(Animal::query()->where(Animal::FK_FINCA_ID, $farmId))
+                            ->select(Animal::ATTR_ID)->get();
 
                     foreach ($animalsActives as $index => $item) {
                         $animalsActivesIds[] = $item->id;
