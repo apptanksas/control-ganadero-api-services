@@ -3,6 +3,8 @@
 ## 2023-10-27
 ### Added
 - Se agrega aumento de rate-limit para las apis.
+### Fixed
+- Se corrige consulta de animales activos para obtener los lotes.
 
 ## 2023-10-25
 ### Added

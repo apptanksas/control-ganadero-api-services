@@ -11,6 +11,7 @@ use App\Models\Lot;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Src\Util\EloquentBuilderWrapper;
 use Src\Util\TTL;
 
 class AnimalLotController extends ApiController
@@ -21,7 +22,7 @@ class AnimalLotController extends ApiController
     function index($lotId, Request $request)
     {
         try {
-            return Cache::remember(sprintf(self::CACHE_KEY_INDEX, $lotId), TTL::ONE_MONTH,
+            return Cache::remember(sprintf(self::CACHE_KEY_INDEX, $lotId), TTL::ONE_HOUR,
                 function () use ($lotId) {
 
                     /**
@@ -33,12 +34,8 @@ class AnimalLotController extends ApiController
                     $animalsActivesIds = [];
 
                     if ($lot != null) {
-                        $animalsActives = Animal::query()->where(Animal::FK_FINCA_ID, $lot->getFarmId())
-                            ->whereNull(Animal::ATTR_FECHA_BAJA)->select(Animal::ATTR_ID)
-                            ->where(function ($builder) {
-                                return $builder->where(Animal::ATTR_ESTADO_VENTA_ID, "!=", Animal::ESTADO_VENTA_ANIMAL_VENDIDO)
-                                    ->orWhereNull(Animal::ATTR_ESTADO_VENTA_ID);
-                            })->get();
+                        $animalsActives = EloquentBuilderWrapper::buildAnimalsActives(Animal::query()->where(Animal::FK_FINCA_ID, $lot->getFarmId()))
+                            ->select(Animal::ATTR_ID)->get();
 
                         foreach ($animalsActives as $index => $item) {
                             $animalsActivesIds[] = $item->id;

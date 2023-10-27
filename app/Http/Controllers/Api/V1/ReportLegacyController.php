@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Src\Reports\Legacy\AnimalFormatter;
+use Src\Util\EloquentBuilderWrapper;
 
 class ReportLegacyController extends ApiController
 {
@@ -89,16 +90,8 @@ class ReportLegacyController extends ApiController
         /**
          * @var $animals Animal[]
          */
-        $animals = Animal::query()
-            ->where(Animal::FK_FINCA_ID, $farmId)
-            ->where(function ($builder) {
-                return $builder->whereNull(Animal::ATTR_IN_FINCA)->orWhere(Animal::ATTR_IN_FINCA, 1);
-            })
-            ->where(Animal::ATTR_ESTADO_SALUD_ID, "!=", Animal::ESTADO_SALUD_FALLECIDA)
-            ->where(function ($builder) {
-                return $builder->whereNull(Animal::ATTR_ESTADO_VENTA_ID)
-                    ->orWhere(Animal::ATTR_ESTADO_VENTA_ID, "!=", Animal::ESTADO_VENTA_ANIMAL_VENDIDO);
-            })
+        $animals = EloquentBuilderWrapper::buildAnimalsActives(Animal::query()
+            ->where(Animal::FK_FINCA_ID, $farmId))
             ->whereIn(Animal::ATTR_ID, $animalsIds)
             ->get([Animal::ATTR_ID, Animal::ATTR_CODIGO, Animal::ATTR_FECHA_NACIMIENTO, Animal::ATTR_NOMBRE, Animal::ATTR_IS_MACHO]);
 
@@ -136,22 +129,13 @@ class ReportLegacyController extends ApiController
         /**
          * @var $animals Animal[]
          */
-        $animals = Animal::query()
-            ->where(Animal::FK_FINCA_ID, $farmId)
-            ->where(function ($builder) {
-                return $builder->whereNull(Animal::ATTR_IN_FINCA)->orWhere(Animal::ATTR_IN_FINCA, 1);
-            })
-            ->where(Animal::ATTR_ESTADO_SALUD_ID, "!=", Animal::ESTADO_SALUD_FALLECIDA)
-            ->where(function ($builder) {
-                return $builder->whereNull(Animal::ATTR_ESTADO_VENTA_ID)
-                    ->orWhere(Animal::ATTR_ESTADO_VENTA_ID, "!=", Animal::ESTADO_VENTA_ANIMAL_VENDIDO);
-            })
-            ->where(function ($builder) {
-                return $builder->whereNull(Animal::ATTR_IS_MACHO)
-                    ->orWhere(Animal::ATTR_IS_MACHO, "!=", 1);
-            })
-            ->whereIn(Animal::ATTR_ID, $animalsIds)
-            ->get([Animal::ATTR_ID]);
+        $animals = EloquentBuilderWrapper::buildAnimalsActives(Animal::query()->where(Animal::FK_FINCA_ID, $farmId)
+                ->where(function ($builder) {
+                    return $builder->whereNull(Animal::ATTR_IS_MACHO)
+                        ->orWhere(Animal::ATTR_IS_MACHO, "!=", 1);
+                }))
+                ->whereIn(Animal::ATTR_ID, $animalsIds)
+                ->get([Animal::ATTR_ID]);
 
 
         foreach ($animals as $animal) {
