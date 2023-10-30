@@ -1,5 +1,8 @@
 # Changelog Versions
 
+## 2023-10-30
+- Se incrementa el rate-limit de las apis a 1000 por minuto.
+
 ## 2023-10-27
 ### Added
 - Se agrega aumento de rate-limit para las apis.
