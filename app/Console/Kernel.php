@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\LoadAnimalLotsCommand;
+use App\Console\Commands\RemoveDuplicateAnimalLotsCommand;
 use App\Console\Commands\SendSubscriptionReminders;
 use App\Console\Commands\UpdatePhotoDomainCommand;
 use Illuminate\Console\Scheduling\Schedule;
@@ -14,7 +15,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         SendSubscriptionReminders::class,
         LoadAnimalLotsCommand::class,
-        UpdatePhotoDomainCommand::class
+        UpdatePhotoDomainCommand::class,
+        RemoveDuplicateAnimalLotsCommand::class
     ];
 
     /**
@@ -27,6 +29,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command(SendSubscriptionReminders::COMMAND)->dailyAt("06:00")->runInBackground();
         $schedule->command(UpdatePhotoDomainCommand::COMMAND)->everyThirtyMinutes()->runInBackground();
+        $schedule->command(RemoveDuplicateAnimalLotsCommand::COMMAND)->dailyAt("03:00")->runInBackground();
+        $schedule->command(RemoveDuplicateAnimalLotsCommand::COMMAND)->dailyAt("15:00")->runInBackground();
     }
 
     /**
