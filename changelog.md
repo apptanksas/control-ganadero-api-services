@@ -1,5 +1,8 @@
 # Changelog Versions
 
+## 2023-11-01
+- Se agrega comando para eliminar el duplicado de animales en los lotes.
+
 ## 2023-10-30
 - Se incrementa el rate-limit de las apis a 1000 por minuto.
 
