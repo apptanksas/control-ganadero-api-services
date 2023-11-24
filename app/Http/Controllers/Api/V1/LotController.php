@@ -188,7 +188,7 @@ class LotController extends ApiController
                 AnimalLot::query()->where(AnimalLot::FK_LOT_ID, $id)->delete();
             });
 
-            $normalizedName = normalize_text($lot->getName());
+            $normalizedName = $lot->getNormalized();
 
             $this->removeCacheIndex($lot->getFarmId());
             $this->removeCacheStore($normalizedName, $lot->getFarmId());

@@ -21,6 +21,11 @@ class Lot extends BaseModel
         return $this->{self::ATTR_NAME};
     }
 
+    function getNormalized()
+    {
+        return $this->{self::ATTR_NAME_NORMALIZED};
+    }
+
     function getFarmId(): int
     {
         return $this->{self::FK_FARM_ID};
