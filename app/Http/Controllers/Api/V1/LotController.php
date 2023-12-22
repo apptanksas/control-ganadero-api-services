@@ -76,7 +76,7 @@ class LotController extends ApiController
 
         try {
 
-            $name = $request->get("name");
+            $name = $request->get("name","Lote");
             $nameNormalized = normalize_text($name);
             $farmId = $request->get("farm_id");
 
