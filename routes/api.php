@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AnimalLotController;
 use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
 use App\Http\Controllers\Api\V1\GetLotByAnimalIdController;
 use App\Http\Controllers\Api\V1\GetUserSubscriptionByFarmController;
+use App\Http\Controllers\Api\V1\KVSController;
 use App\Http\Controllers\Api\V1\LotController;
 use App\Http\Controllers\Api\V1\ReportLegacyController;
 use App\Http\Controllers\Api\V1\UpdateAnimalController;
@@ -47,5 +48,6 @@ Route::domain(config("app.url"))->middleware(['throttle:1000,1'])->prefix("v1")-
             Route::get("females-by-lot", ReportLegacyController::class . "@getReportFemalesByLot");
         });
 
+    Route::resource("kvs", KVSController::class)->only("index", "show", "store", "update", "destroy");;
 
 });

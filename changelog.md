@@ -1,5 +1,8 @@
 # Changelog Versions
 
+## 2024-05-13
+- Se agrega servicio de KVS
+
 ## 2023-11-01
 - Se agrega comando para eliminar el duplicado de animales en los lotes.
 
