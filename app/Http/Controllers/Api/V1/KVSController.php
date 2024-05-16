@@ -35,7 +35,7 @@ class KVSController extends ApiController
         $result = KVS::query()->where(KVS::FK_USER_ID, $userId)->where(KVS::ATTR_KEY, $key)->get(KVS::ATTR_VALUE);
 
         if ($result->count() == 0) {
-            return $this->badRequestResponse("Resource with key[$key] does not exists.");
+            return $this->notFoundResponse("Resource with key[$key] does not exists.");
         }
 
         return $this->successResponse(json_decode($result[0]->value, true));

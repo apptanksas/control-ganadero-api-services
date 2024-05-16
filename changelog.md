@@ -1,5 +1,8 @@
 # Changelog Versions
 
+## 2024-05-16
+- Se cambia el http code por 404 cuando no existe una key en el kvs. 
+
 ## 2024-05-13
 - Se agrega servicio de KVS
 
