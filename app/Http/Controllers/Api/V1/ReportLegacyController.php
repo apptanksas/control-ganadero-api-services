@@ -98,7 +98,7 @@ class ReportLegacyController extends ApiController
 
         foreach ($animals as $animal) {
             $row = array();
-            $row[] = $animal->getId();
+            $row[] = strval($animal->getId());
             $row[] = $animal->getCodigo();
             $row[] = AnimalFormatter::getDisplayEdad($animal);
             $row[] = $animal->getNombre();
