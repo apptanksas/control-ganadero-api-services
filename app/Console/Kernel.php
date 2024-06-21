@@ -6,6 +6,7 @@ use App\Console\Commands\GenerateMetricsCommand;
 use App\Console\Commands\LoadAnimalLotsCommand;
 use App\Console\Commands\RemoveDuplicateAnimalLotsCommand;
 use App\Console\Commands\SendSubscriptionReminders;
+use App\Console\Commands\UpdateMetricsCommand;
 use App\Console\Commands\UpdatePhotoDomainCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -18,7 +19,8 @@ class Kernel extends ConsoleKernel
         LoadAnimalLotsCommand::class,
         UpdatePhotoDomainCommand::class,
         RemoveDuplicateAnimalLotsCommand::class,
-        GenerateMetricsCommand::class
+        GenerateMetricsCommand::class,
+        UpdateMetricsCommand::class
     ];
 
     /**
@@ -33,6 +35,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(UpdatePhotoDomainCommand::COMMAND)->everyThirtyMinutes()->runInBackground();
         $schedule->command(RemoveDuplicateAnimalLotsCommand::COMMAND)->dailyAt("03:00")->runInBackground();
         $schedule->command(RemoveDuplicateAnimalLotsCommand::COMMAND)->dailyAt("15:00")->runInBackground();
+        $schedule->command(UpdateMetricsCommand::COMMAND)->dailyAt("00:00")->runInBackground();
     }
 
     /**
