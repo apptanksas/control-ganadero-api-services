@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\GenerateMetricsCommand;
 use App\Http\Controllers\Api\V1\AnimalLotController;
 use App\Http\Controllers\Api\V1\DeleteUserInvitationController;
 use App\Http\Controllers\Api\V1\GetLotByAnimalIdController;
@@ -8,7 +9,7 @@ use App\Http\Controllers\Api\V1\KVSController;
 use App\Http\Controllers\Api\V1\LotController;
 use App\Http\Controllers\Api\V1\ReportLegacyController;
 use App\Http\Controllers\Api\V1\UpdateAnimalController;
-use App\Http\Controllers\StatisticsController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,10 +36,10 @@ Route::domain(config("app.url"))->middleware(['throttle:1000,1'])->prefix("v1")-
 
     Route::prefix("statistics")->group(
         function () {
-            Route::get("new-users", StatisticsController::class . "@getNewUsers");
-            Route::get("subscriptions", StatisticsController::class . "@getNewSubscriptions");
-            Route::get("users", StatisticsController::class . "@getUsers");
-            Route::get("animals", StatisticsController::class . "@getAnimals");
+            Route::post("generate", function () {
+                Artisan::queue(GenerateMetricsCommand::COMMAND);
+                return "OK";
+            });
         }
     );
 

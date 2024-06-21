@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\GenerateMetricsCommand;
 use App\Console\Commands\LoadAnimalLotsCommand;
 use App\Console\Commands\RemoveDuplicateAnimalLotsCommand;
 use App\Console\Commands\SendSubscriptionReminders;
@@ -16,7 +17,8 @@ class Kernel extends ConsoleKernel
         SendSubscriptionReminders::class,
         LoadAnimalLotsCommand::class,
         UpdatePhotoDomainCommand::class,
-        RemoveDuplicateAnimalLotsCommand::class
+        RemoveDuplicateAnimalLotsCommand::class,
+        GenerateMetricsCommand::class
     ];
 
     /**
